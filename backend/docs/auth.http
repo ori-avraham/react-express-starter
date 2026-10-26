@@ -1,0 +1,45 @@
+@baseUrl = http://localhost:3000
+@email = auth-test@example.com
+@password = password1234
+
+### Better Auth health check
+GET {{baseUrl}}/api/auth/ok
+
+### Sign up with email and password
+# Change @email when repeating this request after the user has been created.
+POST {{baseUrl}}/api/auth/sign-up/email
+Origin: {{baseUrl}}
+Content-Type: application/json
+
+{
+  "name": "Auth Test User",
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Sign in with email and password
+# The HTTP client's cookie jar should retain the session cookie.
+POST {{baseUrl}}/api/auth/sign-in/email
+Origin: {{baseUrl}}
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "rememberMe": true
+}
+
+### Get the current session
+GET {{baseUrl}}/api/auth/get-session
+Origin: {{baseUrl}}
+
+### Sign out
+POST {{baseUrl}}/api/auth/sign-out
+Origin: {{baseUrl}}
+Content-Type: application/json
+
+{}
+
+### Confirm the session is cleared
+GET {{baseUrl}}/api/auth/get-session
+Origin: {{baseUrl}}
