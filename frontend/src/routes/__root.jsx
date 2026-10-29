@@ -1,21 +1,6 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-import { Button } from '@/components/ui/button'
+import { createRootRoute, Outlet } from '@tanstack/react-router'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
-const RootLayout = () => (
-  <>
-    <div className="p-2 flex gap-2">
-      <Button variant="link" nativeButton={false} render={<Link to="/" />}>
-        Home
-      </Button>
-      <Button variant="link" nativeButton={false} render={<Link to="/about" />}>
-        About
-      </Button>
-    </div>
-    <hr />
-    <Outlet />
-    <TanStackRouterDevtools />
-  </>
-)
+const RootLayout = () => <TooltipProvider><Outlet /></TooltipProvider>
 
 export const Route = createRootRoute({ component: RootLayout })
