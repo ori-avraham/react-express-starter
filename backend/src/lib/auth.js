@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
+import { admin as adminPlugin } from "better-auth/plugins";
 import { MongoClient } from "mongodb";
 
 const databaseUrl =
@@ -14,4 +15,5 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  plugins: [adminPlugin()],
 });
