@@ -14,6 +14,13 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    // Forward /api requests to the Express backend, so the frontend and the
+    // backend look like one site to the browser (no CORS or cookie problems).
+    proxy: {
+      '/api': 'http://localhost:3000',
+    },
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

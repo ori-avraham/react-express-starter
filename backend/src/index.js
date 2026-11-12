@@ -1,8 +1,10 @@
 import { getLogger } from "@logtape/logtape";
 import app from "./app.js";
+import { connectDatabase } from "./lib/database.js";
 import { configureLogging } from "./lib/logging.js";
 
 await configureLogging();
+await connectDatabase();
 
 const port = Number(process.env.PORT) || 3000;
 

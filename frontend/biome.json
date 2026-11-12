@@ -1,7 +1,13 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.6.3/schema.json",
   "files": {
-    "includes": ["src/**/*", "*.js", "*.json", ".vscode/**/*.json"]
+    "includes": [
+      "src/**/*",
+      "!src/routeTree.gen.ts",
+      "*.js",
+      "*.json",
+      ".vscode/**/*.json"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -16,7 +22,11 @@
       "suspicious": {
         "noUnknownAtRules": "off"
       }
-    }
+    },
+    "includes": [
+      "**",
+      "!src/components/ui/**"
+    ]
   },
   "javascript": {
     "formatter": {
@@ -26,6 +36,8 @@
     }
   },
   "css": {
-    "parser": { "tailwindDirectives": true }
+    "parser": {
+      "tailwindDirectives": true
+    }
   }
 }

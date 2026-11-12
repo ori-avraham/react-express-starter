@@ -4,6 +4,8 @@ node_modules/
 # Development environments
 .devenv/
 .direnv/
+devenv/
+direnv/
 
 # Environment files
 .env
@@ -37,3 +39,5 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+projects

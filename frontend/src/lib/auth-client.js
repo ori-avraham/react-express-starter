@@ -1,12 +1,10 @@
-import { createAuthClient } from 'better-auth/react'
 import { adminClient } from 'better-auth/client/plugins'
+import { createAuthClient } from 'better-auth/react'
 
-const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-
+// Requests go to /api/auth on the Vite server, which forwards them to the
+// backend (see vite.config.js).
 export const authClient = createAuthClient({
-  baseURL: apiBaseUrl,
+  baseURL: window.location.origin,
   basePath: '/api/auth',
   plugins: [adminClient()],
 })
-
-export { apiBaseUrl }

@@ -4,16 +4,18 @@ import {
   redirect,
   useNavigate,
 } from '@tanstack/react-router'
-import { useEffect } from 'react'
 import { AppSidebar } from '@/components/app-sidebar'
-import { SiteHeader } from '@/components/site-header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { authClient } from '@/lib/auth-client'
 
+// Layout for every page under /dashboard: only signed-in users get in.
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: async () => {
     const { data: session } = await authClient.getSession()
     if (!session) throw redirect({ to: '/signin' })
+    // Whatever is returned here is available to child routes as `context`,
+    // e.g. requireRole() in lib/guards.js reads context.session.
+    return { session }
   },
   component: DashboardLayout,
 })
@@ -21,10 +23,6 @@ export const Route = createFileRoute('/dashboard')({
 function DashboardLayout() {
   const navigate = useNavigate()
   const { data: session } = authClient.useSession()
-
-  useEffect(() => {
-    if (!session) navigate({ to: '/signin' })
-  }, [navigate, session])
 
   async function handleSignOut() {
     await authClient.signOut()
@@ -40,16 +38,8 @@ function DashboardLayout() {
         '--header-height': 'calc(var(--spacing) * 12)',
       }}
     >
-      <AppSidebar
-        user={{
-          name: session.user.name || 'Northstar user',
-          email: session.user.email,
-          avatar: '',
-        }}
-        onSignOut={handleSignOut}
-      />
+      <AppSidebar user={session.user} onSignOut={handleSignOut} />
       <SidebarInset>
-        <SiteHeader />
         <Outlet />
       </SidebarInset>
     </SidebarProvider>

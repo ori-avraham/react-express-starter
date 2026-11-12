@@ -1,0 +1,76 @@
+# Requests for the notes example. Run `npm run seed` first.
+# Works with the VS Code "REST Client" extension or JetBrains HTTP Client.
+# Tip: copy this file for every resource you build and use it as test evidence.
+
+@baseUrl = http://localhost:3000
+@password = password1234
+
+### 1. Sign in as a member (the session cookie is remembered)
+POST {{baseUrl}}/api/auth/sign-in/email
+Origin: http://localhost:5173
+Content-Type: application/json
+
+{ "email": "member@demo.com", "password": "{{password}}" }
+
+### 2. List my notes (members only see their own)
+GET {{baseUrl}}/api/notes
+
+### 3. Filter by status
+GET {{baseUrl}}/api/notes?status=open
+
+### 4. Counts by status
+GET {{baseUrl}}/api/notes/stats
+
+### 5. Create a note -> 201. The status is always "open", even if you send another one.
+# @name created
+POST {{baseUrl}}/api/notes
+Content-Type: application/json
+
+{ "title": "Call the technician", "content": "Projector in room 12", "dueDate": "2026-12-01" }
+
+### 6. Validation error -> 400 with per-field errors
+POST {{baseUrl}}/api/notes
+Content-Type: application/json
+
+{ "title": "x", "dueDate": "not-a-date" }
+
+### 7. Same title twice -> 409
+POST {{baseUrl}}/api/notes
+Content-Type: application/json
+
+{ "title": "Call the technician" }
+
+### 8. Update the note created in step 5
+PATCH {{baseUrl}}/api/notes/{{created.response.body.id}}
+Content-Type: application/json
+
+{ "status": "done" }
+
+### 9. Members cannot archive -> 403
+PATCH {{baseUrl}}/api/notes/{{created.response.body.id}}/archive
+
+### 10. Sign in as the manager
+POST {{baseUrl}}/api/auth/sign-in/email
+Origin: http://localhost:5173
+Content-Type: application/json
+
+{ "email": "manager@demo.com", "password": "{{password}}" }
+
+### 11. Managers see everyone's notes
+GET {{baseUrl}}/api/notes
+
+### 12. Managers can archive -> 200
+PATCH {{baseUrl}}/api/notes/{{created.response.body.id}}/archive
+
+### 13. Archived notes cannot be edited -> 409
+PATCH {{baseUrl}}/api/notes/{{created.response.body.id}}
+Content-Type: application/json
+
+{ "title": "Too late" }
+
+### 14. Delete -> 204
+DELETE {{baseUrl}}/api/notes/{{created.response.body.id}}
+
+### 15. Better Auth admin endpoint: list users (managers only)
+GET {{baseUrl}}/api/auth/admin/list-users
+Origin: http://localhost:5173

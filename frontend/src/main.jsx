@@ -3,9 +3,19 @@ import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 
+import { PageError, PagePending } from '@/components/page-states'
+import { APP_NAME } from '@/lib/config'
 import { routeTree } from './routeTree.gen'
 
-const router = createRouter({ routeTree })
+document.title = APP_NAME
+
+const router = createRouter({
+  routeTree,
+  // Shown for any route whose loader is still running or has failed.
+  defaultPendingComponent: PagePending,
+  defaultErrorComponent: PageError,
+  defaultPendingMs: 200,
+})
 
 const rootElement = document.getElementById('root')
 if (!rootElement.innerHTML) {

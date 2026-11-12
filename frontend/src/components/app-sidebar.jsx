@@ -1,154 +1,52 @@
-'use client'
-
-import * as React from 'react'
-
-import { NavDocuments } from '@/components/nav-documents'
-import { NavMain } from '@/components/nav-main'
-import { NavSecondary } from '@/components/nav-secondary'
+import { Link, useRouterState } from '@tanstack/react-router'
+import {
+  LayoutDashboardIcon,
+  NotebookPenIcon,
+  SparklesIcon,
+  UsersIcon,
+} from 'lucide-react'
 import { NavUser } from '@/components/nav-user'
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import {
-  LayoutDashboardIcon,
-  ListIcon,
-  ChartBarIcon,
-  FolderIcon,
-  UsersIcon,
-  CameraIcon,
-  FileTextIcon,
-  Settings2Icon,
-  CircleHelpIcon,
-  SearchIcon,
-  DatabaseIcon,
-  FileChartColumnIcon,
-  FileIcon,
-  CommandIcon,
-} from 'lucide-react'
+import { APP_NAME } from '@/lib/config'
+import { ROLES } from '@/lib/roles'
 
-const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
+// The sidebar links. Add one entry per page.
+// `roles` is optional: when set, only users with one of those roles see it.
+const navItems = [
+  { title: 'Dashboard', to: '/dashboard', icon: LayoutDashboardIcon },
+  { title: 'Notes', to: '/dashboard/notes', icon: NotebookPenIcon },
+  {
+    title: 'Users',
+    to: '/dashboard/users',
+    icon: UsersIcon,
+    roles: [ROLES.MANAGER],
   },
-  navMain: [
-    {
-      title: 'Dashboard',
-      url: '#',
-      icon: <LayoutDashboardIcon />,
-    },
-    {
-      title: 'Lifecycle',
-      url: '#',
-      icon: <ListIcon />,
-    },
-    {
-      title: 'Analytics',
-      url: '#',
-      icon: <ChartBarIcon />,
-    },
-    {
-      title: 'Projects',
-      url: '#',
-      icon: <FolderIcon />,
-    },
-    {
-      title: 'Team',
-      url: '#',
-      icon: <UsersIcon />,
-    },
-  ],
-  navClouds: [
-    {
-      title: 'Capture',
-      icon: <CameraIcon />,
-      isActive: true,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Proposal',
-      icon: <FileTextIcon />,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Prompts',
-      icon: <FileTextIcon />,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: 'Settings',
-      url: '#',
-      icon: <Settings2Icon />,
-    },
-    {
-      title: 'Get Help',
-      url: '#',
-      icon: <CircleHelpIcon />,
-    },
-    {
-      title: 'Search',
-      url: '#',
-      icon: <SearchIcon />,
-    },
-  ],
-  documents: [
-    {
-      name: 'Data Library',
-      url: '#',
-      icon: <DatabaseIcon />,
-    },
-    {
-      name: 'Reports',
-      url: '#',
-      icon: <FileChartColumnIcon />,
-    },
-    {
-      name: 'Word Assistant',
-      url: '#',
-      icon: <FileIcon />,
-    },
-  ],
-}
-export function AppSidebar({ user = data.user, onSignOut, ...props }) {
+]
+
+export function AppSidebar({ user, onSignOut, ...props }) {
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  })
+
+  const visibleItems = navItems.filter(
+    (item) => !item.roles || item.roles.includes(user.role),
+  )
+
+  function isActive(to) {
+    if (to === '/dashboard') return pathname === '/dashboard'
+    return pathname === to || pathname.startsWith(`${to}/`)
+  }
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -156,18 +54,33 @@ export function AppSidebar({ user = data.user, onSignOut, ...props }) {
           <SidebarMenuItem>
             <SidebarMenuButton
               className="data-[slot=sidebar-menu-button]:p-1.5!"
-              render={<a href="/dashboard" />}
+              render={<Link to="/dashboard" />}
             >
-              <CommandIcon className="size-5!" />
-              <span className="text-base font-semibold">Acme Inc.</span>
+              <SparklesIcon className="size-5!" />
+              <span className="text-base font-semibold">{APP_NAME}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {visibleItems.map((item) => (
+                <SidebarMenuItem key={item.to}>
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    isActive={isActive(item.to)}
+                    render={<Link to={item.to} />}
+                  >
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} onSignOut={onSignOut} />

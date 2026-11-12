@@ -6,6 +6,7 @@ import helmet from "helmet";
 import { auth } from "./lib/auth.js";
 import { notFound } from "./middleware/not-found.js";
 import { onError } from "./middleware/on-error.js";
+import { notesRouter } from "./routes/notes.routes.js";
 
 const app = express();
 const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
@@ -27,6 +28,9 @@ app.get("/", (_req, res) => {
 app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(express.json());
+
+// Your API routes. Add one line per resource.
+app.use("/api/notes", notesRouter);
 
 app.use(notFound);
 app.use(onError);

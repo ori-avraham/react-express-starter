@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node --env-file=.env ./src/index.js",
     "dev": "node --watch --env-file=.env ./src/index.js",
+    "seed": "node --env-file=.env ./src/seed.js",
     "format": "biome format",
     "format:fix": "biome format --write",
     "lint": "biome lint",
